@@ -1,0 +1,230 @@
+\documentclass[12pt]{article}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{enumerate}
+\usepackage{fancyvrb}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{tikzsymbols}
+\usepackage{todonotes}
+\usepackage{bbm}
+\usepackage{color}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{soul} % for HL
+\usepackage{color} % for HL
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% \renewcommand{\theenumi}{\roman{enumi}}
+\newcommand{\rmn}[1]{{\textcolor{blue}{\bf [{\sc rmn:} #1]}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\usetikzlibrary{positioning,calc}
+%%%%%%%%%
+\usepackage[most]{tcolorbox}
+\newtcolorbox[]{solution}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Solution,
+    #1
+}
+
+\newtcolorbox[]{fillme}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Fill me in,
+    #1
+}
+
+\newcommand*{\E}{\mathbb{E}}
+\newcommand*{\prob}{\mathbb{P}}
+\newcommand*{\F}{\mathcal{F}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{observation}{Observation}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+%%%%%%%%%%
+
+\date{Due February 12, 2024}
+\author{\begin{fillme}[width=0.3\textwidth]
+ Your name here.
+\end{fillme}} % Fill in your name!
+
+\title{ECE433/COS435 Introduction to RL\\
+  Assignment 1: MDP\\
+  Spring 2024\\
+}
+
+\begin{document}
+  \maketitle
+  \section*{Collaborators}
+\begin{fillme}
+ Please fill in the names and NetIDs of your collaborators in this section.
+\end{fillme}
+
+\section*{Instructions}
+
+You should work alone for this this assignment. Writeups should be typesetted in Latex and submitted as PDFs. You can work with whatever tool you like for the code, but \textbf{please submit the asked-for snippet and answer in the solutions box as part of your writeup. We will only be grading your write-up.} Make sure to still also attach your notebook/code with your submission.
+
+\section*{Question 1. Markov Chain}
+Let the transition probability matrix of a two-state Markov chain be specified by
+We have a Markov chain with two states, $s_1$ and $s_2$. The probability of transitioning from $s_1$ to $s_2$ is $p$, and vice versa. We can summarize the transition probabilities in the table shown below.
+
+\[
+P = \begin{bmatrix}
+p & 1 - p \\
+1 - p & p 
+\end{bmatrix},
+\]
+the value of $P_{i,j}$ indicates the probability of transiting from state $i$ to state $j$, for any $i,j \in [1,2]$.
+
+ \subsection*{Question 1.a} Use the principle of induction\footnote{\url{https://en.wikipedia.org/wiki/Mathematical_induction}} to show that
+\[
+P^{(n)} = \begin{bmatrix}
+\frac{1}{2} + \frac{1}{2}(2p - 1)^n & \frac{1}{2} - \frac{1}{2}(2p - 1)^n \\
+\frac{1}{2} - \frac{1}{2}(2p - 1)^n & \frac{1}{2} + \frac{1}{2}(2p - 1)^n
+\end{bmatrix}.
+\]
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\subsection*{Question 1.b} Expectation of State Occupancy
+    \begin{itemize}
+        \item Compute the expected number of times the process is in $s_1$ after $n$ transitions, starting from $s_1$.
+        \item Compute the expected number of times the process is in $s_2$ after $n$ transitions, starting from $s_1$.
+        \item Discuss how the expectations change as 
+$n$ approaches infinity and the implications for the state occupancy for the above two cases.
+    \end{itemize}
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\subsection*{Question 1.c} Probability of First Visit
+    \begin{itemize}
+        \item Compute the probability that the process visits $s_2$ for the first time on the 
+$k$-th transition, given it starts in $s_1$.
+\item How does this probability change as $k$ increases?
+    \end{itemize}
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\subsection*{Question 1.d} Conditional Expectations
+    \begin{itemize}
+        \item Given that the chain is in $s_2$ at the $n$-th step, compute the conditional expectation of the number of visits to $s_1$ in the next $m$ steps.
+\item Explore how this expectation varies with different values of $p$.
+    \end{itemize}
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\subsection*{Question 1.e} Expected rewards. When transiting from one state to another, assume we receive a reward of $1$ for reaching $s_2$ and $-1$ for reaching $s_1$.
+\begin{itemize}
+    \item Compute the expected total reward after 
+$n$ transitions (i.e., the summation of rewards), starting from $s_1$.
+%  \item Relate the state occupancy of $s_2$ after 
+% $n$ transitions to the expected total reward.
+\end{itemize}
+
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\section*{Question 2. Secretary problem}
+
+Suppose you are hiring one secretary and going to interview the
+candidates one by one sequentially. After an interview is over, you have to decide whether to hire
+the current candidate. If you hire the current candidate, the whole process stops. Otherwise, the
+interview continues, but the candidate will not return and cannot be hired. In other words, you
+can only hire the current candidate but cannot hire the past candidate. In total, there are $n$ candidates,
+and you have a strict preference among them. It means you can tell who is better than whom, and
+no two candidates are equal. When meeting a new candidate, you compare with past candidates, but you do not know the ranking of current candidates in all people. For example, if you have
+interviewed $c_1,c_2,c_3$, then you can rank these three, say $c_1>c_3>c_2$, but you do not know the ranking of $c_1$ among all $n$ candidates. Candidates come in a uniform random order. The objective is to find a policy (when to stop) in order to maximize the probability of hiring the best candidate.
+The problem is known as the optimal stopping problem. It can be formulated by MDP.
+
+Specifically, denote $t$ as the time after we interview the $t$-th candidate, $t = 1, \cdots, n$. We introduce a state variable $s_t \in \{-1, 0, 1\}$. $s_t = -1$  means the position is filled. $s_t = 0$ means the position is
+    not filled, and the current $t$-th candidate is not the best candidate so far. $s_t = 1$  means the
+    position is not filled, and the current $t$-th candidate is the best candidate so far.  Initially, we
+    set $s_t = 1$ because after interviewing the first candidate, he/she must be the best among
+    past candidates. Suppose we do not hire anyone and keep interviewing.
+
+\subsection*{Question 2.a}  Compute the following probabilities: $P_t(s,1)=\mathbb{P}(s_{t+1}=1|s_t=s)$ and  $P_t(s,0)=\mathbb{P}(s_{t+1}=0|s_t=s)$. (Hint: you may use $t$ in the expressions.)
+    \begin{solution}
+Your solution here...
+\end{solution}
+   
+\subsection*{Question 2.b}  At time $t$, our action is either to hire ($a_t = 1$) or to continue interviewing ($a_t = 0$). Show the value of $P(s_{t+1}=s'| s_t=s, a_t=a)$ for $ \forall s, s' \in \{-1,0,1\}, a_t \in \{0,1\}$. (Hint: you may keep $P_t(s,s')$ in the expressions.)
+    \begin{solution}
+Your solution here...
+\end{solution}
+
+
+\section*{Question 3. Grid World Example}
+
+In this exercise, you will work with a simple reinforcement learning environment called "Gridworld." Gridworld is a 4x4 grid where an agent moves to reach a goal state. The agent can take four actions at each state (up, down, left, right) and receive a reward for each action. Moving into a wall (the edge of the grid) keeps the agent in its current state.
+
+Grid Layout:
+\begin{itemize}
+\item The grid is a 4x4 matrix.
+\item Start state (S): Top left cell (0,0).
+\item Goal state (G): Bottom right cell (3,3).
+\end{itemize}
+The agent receives a reward of -1 for each action until it reaches the goal state.
+
+
+\subsection*{Question 3.a}
+Formulate the problem as a Markov Decision Process (MDP). Define the states, actions, transition probabilities (assume deterministic transitions), rewards, and policy.
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\subsection*{Question 3.b} Define the policy.
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\subsection*{Question 3.c} How many unique (deterministic) policies are there in total?
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\end{document}
+
