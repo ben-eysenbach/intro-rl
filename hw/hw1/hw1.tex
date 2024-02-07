@@ -82,7 +82,7 @@
 
 %%%%%%%%%%
 
-\date{Due February 12, 2024}
+\date{Due February 11, 2024}
 \author{\begin{fillme}[width=0.3\textwidth]
  Your name here.
 \end{fillme}} % Fill in your name!
@@ -101,11 +101,10 @@
 
 \section*{Instructions}
 
-You should work alone for this this assignment. Writeups should be typesetted in Latex and submitted as PDFs. You can work with whatever tool you like for the code, but \textbf{please submit the asked-for snippet and answer in the solutions box as part of your writeup. We will only be grading your write-up.} Make sure to still also attach your notebook/code with your submission.
+Writeups should be typesetted in Latex and submitted as PDFs. You can work with whatever tool you like for the code, but \textbf{please submit the asked-for snippet and answer in the solutions box as part of your writeup. We will only be grading your write-up.} Make sure still also to attach your notebook/code with your submission.
 
 \section*{Question 1. Markov Chain}
-Let the transition probability matrix of a two-state Markov chain be specified by
-We have a Markov chain with two states, $s_1$ and $s_2$. The probability of transitioning from $s_1$ to $s_2$ is $p$, and vice versa. We can summarize the transition probabilities in the table shown below.
+We have a two-state Markov chain with two states, $s_1$ and $s_2$. The probability of transitioning from $s_1$ to $s_2$ is $1-p$, and vice versa. We can summarize the transition probabilities in the table shown below.
 
 \[
 P = \begin{bmatrix}
@@ -113,7 +112,7 @@ p & 1 - p \\
 1 - p & p 
 \end{bmatrix},
 \]
-the value of $P_{i,j}$ indicates the probability of transiting from state $i$ to state $j$, for any $i,j \in [1,2]$.
+the value of $P_{i,j}$ indicates the probability of transitioning from state $i$ to state $j$, for any $i,j \in [1,2]$.
 
  \subsection*{Question 1.a} Use the principle of induction\footnote{\url{https://en.wikipedia.org/wiki/Mathematical_induction}} to show that
 \[
@@ -156,7 +155,7 @@ Your solution here...
 Your solution here...
 \end{solution}
 
-\subsection*{Question 1.e} Expected rewards. When transiting from one state to another, assume we receive a reward of $1$ for reaching $s_2$ and $-1$ for reaching $s_1$.
+\subsection*{Question 1.e} Expected rewards. When transitioning from one state to another, assume we receive a reward of $1$ for reaching $s_2$ and $-1$ for reaching $s_1$.
 \begin{itemize}
     \item Compute the expected total reward after 
 $n$ transitions (i.e., the summation of rewards), starting from $s_1$.
