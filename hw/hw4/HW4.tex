@@ -106,7 +106,7 @@
 
 Writeups should be typesetted in Latex and submitted as PDFs. You can work with whatever tool you like for the code, but \textbf{please submit the asked-for snippet and answer in the solutions box as part of your writeup. We will only be grading your write-up.} Make sure still also to attach your notebook/code with your submission.
 
-\section*{Question 1. Q Learning (30 points)}
+\section*{Question 1. Q Learning (40 points)}
 \section*{Tabular setting}
 If the state and action spaces are sufficiently small, we can simply maintain a table containing the value of $Q(s,a)$ -- an estimate of $Q^*(s,a)$\footnote{Here, $Q^*(s,a)$ refers to optimal $Q$ value function.} -- for every $(s,a)$ pair. In this \textit{tabular setting}, given an experience sample $(s,a,r,s')$, the update rule is
 \begin{equation} \label{q-learning-update}
@@ -114,7 +114,7 @@ Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a' \in \mathcal{A}} Q(
 \end{equation}
 where $\alpha > 0$ is the learning rate and $\gamma \in [0, 1]$ is the discount factor.
 
-\subsection*{Question 1.a: Regular Q-Learning (6 points)} Why is it difficult to extend this learning rule to the game of Tetris or similar Atari games?
+\subsection*{Question 1.a: Regular Q-Learning (8 points)} Why is it difficult to extend this learning rule to the game of Tetris or similar Atari games?
 \begin{solution}
 Your solution here...
 \end{solution}
@@ -129,19 +129,19 @@ In other words, given current parameters at iteration $i$, $\mathbf{w}_i$, we ai
 L(\mathbf{w}_{i+1}) = \mathbb{E}_{s,a,r,s' \sim \mathcal{D}} \left[ \left( r + \gamma \max_{a' \in \mathcal{A}} \hat{q}(s',a';\mathbf{w}_{i}) - \hat{q}(s,a;\mathbf{w}_{i+1}) \right)^2 \right]
 \end{equation}
 
-\subsection*{Question 1.b: Action spaces (6 points)}
+\subsection*{Question 1.b: Action spaces (8 points)}
 We can represent a Q-function $Q(s, a)$ as either a function $Q(s; w): S \rightarrow R^A$ outputting the vector of Q-values $[Q(s, a_1), …, Q(s, a_{|A|})]$ all at once, or a function $Q(s, a; w): S \times A \rightarrow R$ outputting a single Q-value $Q(s, a)$. What is a benefit of implementing the former over the latter? What is one drawback?
 \begin{solution}
 Your solution here...
 \end{solution}
 
-\subsection*{Question 1.c: Continuous actions (6 points)}
+\subsection*{Question 1.c: Continuous actions (8 points)}
 Consider an environment such as \href{https://www.gymlibrary.dev/environments/classic_control/mountain_car_continuous/}{Mountain Car Continuous} where the action space is $[-1,1] \in \mathbb{R}$. How might our representation of the $Q$-function described in (1.a) change?
 \begin{solution}
 Your solution here...
 \end{solution}
 
-\subsection*{Question 1.d: Policy iteration (6 points)}
+\subsection*{Question 1.d: Policy iteration (8 points)}
 Policy iteration is a model-based (i.e. we have access to the transition probabilities) reinforcement learning algorithm that provably improves a policy. In policy iteration, there is a step called "policy evaluation" that estimates the "value" of a state under the current policy $\pi$ being learned:
 $$ V^\pi(s) =  \sum_{s' \in S} P_{\pi(s)} (s' \mid s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ] $$
 The Q-learning update as described in Equation \ref{q-learning-update}, on the other hand, models an entirely different value function. Describe this difference and the reason why.
@@ -150,7 +150,7 @@ The Q-learning update as described in Equation \ref{q-learning-update}, on the o
 Your solution here...
 \end{solution}
 
-\subsection*{Question 1.e: Two Learning Rules for Q-Values (6 points)}
+\subsection*{Question 1.e: Two Learning Rules for Q-Values (8 points)}
 Assuming that you're given a dataset of transitions $(s_t, a, r, s_{t+1})$ collected from a policy $\beta(a \vert s)$. Consider learning a Q-function using one of these two learning rules: \\
 \textbf{Learning Rule 1}
 \begin{equation} 
@@ -166,7 +166,7 @@ In what settings will these two learning rules converge to the same policy?
 Your solution here...
 \end{solution}
 
-\section*{Question 2. Deep Q-Networks (50 points)}
+\section*{Question 2. Deep Q-Networks (55 points)}
 You will implement DQN with experience replay and use it to solve the \texttt{Cartpole-v0} in OpenAI Gym. In this implementation, there is a target network (frozen for TD updates, used in the update function in $\max_{a \in \mathcal{A}} Q(s_{t+1}, a)$) and a Q-network being trained. Every so often, the target network is updated by copying over the weights from the network being trained, but no gradients updates are made to it. 
 \\\\
 While there are many (fantastic) implementations of DQN on Github, the goal of this question is for you to implement DQN from scratch \textit{without} looking up code online. Please write your code in the provided notebook.
@@ -210,7 +210,7 @@ Implement the logic for the greedy policy:
 
 
 
-\subsection*{Question 2.c.i (10 points)} Implement \texttt{td\_estimate()} and \texttt{td\_target()}, which are used to compute the loss. These functions represent your model's estimate of its Q-values and the target-estimate using the target network. 
+\subsection*{Question 2.c.i (15 points)} Implement \texttt{td\_estimate()} and \texttt{td\_target()}, which are used to compute the loss. These functions represent your model's estimate of its Q-values and the target-estimate using the target network. 
 
 \begin{solution}
     \begin{minted}[autogobble]{python}
@@ -237,7 +237,7 @@ Your plots here...
 \end{solution}
 
 
-\section*{Question 3 (20 points)}
+\section*{Question 3 (5 points)}
 \subsection*{Course Feedback}
 What would you change so far about the course?
 
