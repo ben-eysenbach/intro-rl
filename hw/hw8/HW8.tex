@@ -1,0 +1,198 @@
+\documentclass[12pt]{article}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{enumerate}
+\usepackage{fancyvrb}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{tikzsymbols}
+\usepackage{todonotes}
+\usepackage{bbm}
+\usepackage{color}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{soul} % for HL
+\usepackage{color} % for HL
+\usepackage{minted}
+
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[
+backend=biber,
+style=alphabetic,
+sorting=ynt
+]{biblatex}
+\addbibresource{papers.bib}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% \renewcommand{\theenumi}{\roman{enumi}}
+\newcommand{\rmn}[1]{{\textcolor{blue}{\bf [{\sc rmn:} #1]}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\usetikzlibrary{positioning,calc}
+%%%%%%%%%
+\usepackage[most]{tcolorbox}
+\newtcolorbox[]{solution}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Solution,
+    #1
+}
+
+\newtcolorbox[]{fillme}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Fill me in,
+    #1
+}
+
+\newcommand*{\E}{\mathbb{E}}
+\newcommand*{\prob}{\mathbb{P}}
+\newcommand*{\F}{\mathcal{F}}
+\newcommand*{\bo}{\mathbb{B}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{observation}{Observation}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+%%%%%%%%%%
+
+\date{Due April 16, 2024}
+\author{\begin{fillme}[width=0.3\textwidth]
+ Your name here.
+\end{fillme}} % Fill in your name!
+
+\title{ECE433/COS435 Introduction to RL\\
+  Assignment 8: Advanced Policy Gradient Methods \& Multi-Agent Reinforcement Learning\\
+  Spring 2024\\
+}
+
+\begin{document}
+  \maketitle
+  \section*{Collaborators}
+\begin{fillme}
+ Please fill in the names and NetIDs of your collaborators in this section.
+\end{fillme}
+
+\section*{Instructions}
+
+Writeups should be typesetted in Latex and submitted as PDFs. You can work with whatever tool you like for the code, but \textbf{please submit the asked-for snippet and answer in the solutions box as part of your writeup. We will only be grading your write-up.} Make sure still also to attach your notebook/code with your submission.\\
+
+
+\section*{Question 1. Prisoner's Dilemma}
+\textbf{Game Setup:}
+Two members of a criminal gang are arrested and imprisoned. Each prisoner is in solitary confinement with no means of communicating with the other. The prosecutors lack sufficient evidence to convict the pair on the principal charge but have enough to convict both on a lesser charge. The prosecutors offer each prisoner a bargain. The possible outcomes are:
+
+\begin{itemize}
+    \item If $A$ and $B$ each betray the other, each of them serves 2 years in prison.
+    \item If $A$ betrays $B$ but $B$ remains silent, $A$ will be set free, and $B$ will serve 3 years in prison (and vice versa).
+    \item If $A$ and $B$ both remain silent, both of them will serve only 1 year in prison (on the lesser charge).
+\end{itemize}
+
+In this case, we have the ``cost'' matrix (instead of a payoff matrix)\footnote{With the ``cost'' matrix, the agent aims to minimize costs, whereas the agent desires to maximize payoffs in standard game theory settings.}, where the first number in each tuple is Prisoner $A$'s years in prison, and the second number is Prisoner $B$'s:
+
+\[
+\begin{array}{c|c|c}
+\text{Prisoner $A$ \textbackslash\ Prisoner $B$} & \text{Betray} & \text{Remain Silent} \\
+\hline
+\text{Betray} & (2, 2) & (0, 3) \\
+\text{Remain Silent} & (3, 0) & (1, 1) \\
+\end{array}
+\]
+
+\textbf{Question:}
+What is the Nash equilibrium in this game? Justify your answer and try to answer as to why it is considered a ``dilemma''?
+
+\begin{solution}
+
+\end{solution}
+
+\section*{Question 2. Mixed-Strategy Nash Equilibrium (Optional)}
+\textbf{Game Setup:}
+Two firms, A and B, are deciding on whether to enter a market. The payoff matrix is given as follows, where the first number in each tuple represents Firm A's payoff, and the second number represents Firm B's payoff:
+
+\[
+\begin{array}{c|c|c}
+\text{Firm $A$ \textbackslash\ Firm $B$} & \text{Enter} & \text{Stay Out} \\
+\hline
+\text{Enter} & (-1, -1) & (2, 0) \\
+\text{Stay Out} & (0, 2) & (0, 0) \\
+\end{array}
+\]
+
+\textbf{Question:}
+\begin{enumerate}
+    \item Identify any pure strategy Nash equilibria if they exist.
+\item Now, we extend the pure strategy to a mixed one. Let 
+$p$ be the probability that Firm $A$ enters the market, and 
+$1-p$ be the probability that it stays out. Similarly, let 
+$q$ be the probability that Firm $B$ enters the market, and 
+$1-q$ is the probability that it stays out. Determine the probabilities ($p$ and $q$) for which each firm should play each strategy for it to be a Nash equilibrium. (The definition of NE is still the same: neither firm can improve its expected payoff by unilaterally changing the probability distribution over its strategies.)
+\end{enumerate}
+
+\section*{Question 3.}
+
+\subsection*{Question 3.a} 
+First, you need to implement the policy network, which decides the actions to take, and the value network, which estimates the returns.
+Paste your class below:
+\begin{solution}
+\begin{lstlisting}[language=Python]
+class PolicyNetwork(nn.Module):
+    pass
+\end{lstlisting}
+\begin{lstlisting}[language=Python]
+class ValueNetwork(nn.Module):
+    pass
+\end{lstlisting}
+\end{solution}
+
+\subsection*{Question 3.b} 
+Now, you need to implement \emph{ppo\_update()}. This core function optimizes the policy and value networks using the Proximal Policy Optimization algorithm.
+Paste below:
+\begin{solution}
+\begin{lstlisting}[language=Python]
+def ppo_update(policy_net, value_net, optimizer, ppo_epochs, mini_batch_size, states, actions, log_probs, returns, advantages, clip_param=0.2):
+\end{lstlisting}
+\end{solution}
+
+\subsection*{Question 3.c} 
+Finally, you should be able to run the main training. Attach the performance curves below.
+\begin{solution}
+
+\end{solution}
+
+
+\end{document}
