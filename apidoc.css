@@ -173,3 +173,6 @@ body#md {
     background-color: #f4f4f4;
 }
 
+.md img {
+    border-radius: 25px;
+}
