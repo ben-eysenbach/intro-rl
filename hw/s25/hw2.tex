@@ -1,0 +1,429 @@
+\UseRawInputEncoding
+\documentclass{article}
+
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{enumerate}
+\usepackage{fancyvrb}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{tikzsymbols}
+\usepackage{todonotes}
+\usepackage{bbm}
+\usepackage{color}
+\usepackage{mathrsfs}
+\usepackage{minted}
+\usepackage{enumitem}
+\usepackage{soul} % for HL
+\usepackage{color} % for HL
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% \renewcommand{\theenumi}{\roman{enumi}}
+\newcommand{\rmn}[1]{{\textcolor{blue}{\bf [{\sc rmn:} #1]}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\usetikzlibrary{positioning,calc}
+%%%%%%%%%
+\usepackage[most]{tcolorbox}
+\newtcolorbox[]{solution}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Solution,
+    #1
+}
+
+\newtcolorbox[]{fillme}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Fill me in,
+    #1
+}
+
+\newcommand*{\E}{\mathbb{E}}
+\newcommand*{\prob}{\mathbb{P}}
+\newcommand*{\F}{\mathcal{F}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{observation}{Observation}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+%%%%%%%%%%
+
+\date{Due February 17, 2025}
+\author{\begin{fillme}[width=0.3\textwidth]
+ Your name here.
+\end{fillme}} % Fill in your name!
+
+\title{ECE433/COS435 Introduction to RL\\
+  Assignment 2: MPC, CEM; Imitation Learning\\
+  Spring 2025\\
+}
+
+\begin{document}
+    \maketitle
+    \section*{Collaborators}
+    \begin{fillme}
+     Please fill in the names and NetIDs of your collaborators in this section.
+    \end{fillme}
+
+    \section*{Instructions}
+    Writeups should be typeset in Latex and submitted as PDF. You can work with whatever tool you like for the code, but \textbf{please submit the asked-for snippet and answer in the solutions box as part of your writeup. We will only be grading your writeup.}
+    
+    \paragraph{Grading.} 
+    Questions 1 will collectively be worth total 20 points. Question 2 is optional; you will receive a 10-point bonus if you answer it correctly. Question 3-5 will also be worth 80 points, making the total score 100 points.
+
+    \clearpage
+
+\section*{Question 1 (20 points): MPC with CEM for Cart-Pole Control}
+You are required to implement a Model Predictive Control (MPC) approach for the CartPole-v1 environment. The starter code and complete instructions can be found on linked \href{https://colab.research.google.com/drive/1imnNUnqt-unv2MzHpaQBUlP5kFMWdnfI?usp=sharing}{\textbf{Google Colab here}}. 
+
+Within each MPC step, use the Cross-Entropy Method (CEM) to search over a horizon H for the best sequence of actions. Execute only the first action from that sequence in the real environment, then re-plan at the next step. You need to implement them from scratch.
+
+\noindent 1. Write two functions from scratch, with the input arguments provided for each function in parentheses:
+\begin{itemize}
+    \item \texttt{cross\_entropy\_method(mean\_probs, horizon, num\_actions, sample\_size, elite\_frac, cem\_iterations, evaluate\_fn)}
+    \item \texttt{mpc\_control(env, horizon, cem\_iterations, sample\_size, elite\_frac, gamma)}
+\end{itemize}
+
+\noindent 2. \texttt{cross\_entropy\_method(...)}
+\begin{itemize}
+    \item Maintains or updates a probability distribution over action sequences (length $H$). For simplicity here, we only fit the mean of action sequence distributions, i.e., \texttt{mean\_probs}, which provides its initial values as input argument and should be returned as output after the whole update process. Please note that it should be a distribution over sequences of horizon $H$ instead of distribution over actions at one step.
+    \item We consider a simple 1-dimensional discrete action space with \texttt{num\_actions} actions. As an example, if \texttt{num\_actions}=2, the two actions in the action space are integers: 0 and 1. If \texttt{num\_actions}=4, the four actions in the action space are integers: 0, 1, 2 ,3. 
+    \item Samples multiple candidates according to \texttt{samle\_size}, evaluates them with \texttt{evaluate\_fn} which yields one return for one sequence, selects ``elite'' sequences with high returns according to the \texttt{elite\_frac} which is the ratio of ``elite'' sequences over the all sampled sequences, and refits the distribution over the ``elite'' sequences.
+    \item Iterates above steps to fit the distributions for \texttt{cem\_iterations} steps. Returns the best sequence found over all update iterations and the final \texttt{mean\_probs} (which describes the final distribution).    
+\end{itemize}
+
+\noindent 3. \texttt{mpc\_control(env, horizon, cem\_iterations, sample\_size, elite\_frac, gamma)}
+\begin{itemize}
+    \item On each environment step, calls the above CEM to get an action sequence of length $H$ from the current state.
+    \item Executes the first action in the real environment, obtains next state, and continues until done.
+    \item The \texttt{env} is an environment instantiation with two functions provided:
+    
+At the beginning, the environment is reset and yields an observation.    
+\begin{lstlisting}[language=Python]
+obs, _ = env.reset()
+\end{lstlisting}
+At each step, the environment is taking an action and transits to next state (with an observation and a reward yielded), and the ``done'' is a boolean value describing whether the environment simulation finishes:
+\begin{lstlisting}[language=Python]
+obs_next, rew, done, _, _ = env.step(action)
+\end{lstlisting}
+    \item You will need to use subroutines \texttt{cross\_entropy\_method(...)} (as you write in last question) and \texttt{evaluate\_fn}. The \texttt{evaluate\_fn} is provided and you can use directly:
+    \begin{lstlisting}[language=Python]
+        def evaluate_fn(seq):
+            temp_env = gym.make('CartPole-v1', render_mode=None)
+            temp_env.reset()
+            total_ret = 0.0
+            discount_factor = 1.0
+            for action in seq:
+                # step
+                s_next, rew, done_, _, _ = temp_env.step(action)
+                total_ret += discount_factor * rew
+                discount_factor *= gamma
+                if done_:
+                    break
+            return total_ret
+\end{lstlisting}
+\end{itemize}
+
+
+\section*{Question 2 (10-point bonus -- optional): Zero-Order Policy Search using CEM}
+
+\noindent Now that you've seen how to use CEM for searching action sequences in a MPC example, let's re-use the same concept to search directly for a policy parameter vector. This is often called \textbf{``Zero-Order Policy Search,''} because we do not require gradients of the policy but use a zero-order optimization technique. We only need to evaluate how good each parameter vector is.
+
+\noindent In this question, you need to:
+
+\begin{itemize}
+    \item Define a parametric policy for CartPole, which is an environment with a 4-dimensional state space $\mathbb{R}^4$. 
+    \item Reuse your CEM approach to search over $w \in \mathbb{R}^4$ as policy parameters.
+    \item Evaluate each sampled $w$ by running a full episode, gathering total reward, picking elites, and updating the distribution.
+    \item After some iterations, obtain a final $w$. Evaluate that policy and report the average return over multiple episodes.
+\end{itemize}
+
+\noindent Below is a skeleton with TODOs for you to fill in.
+
+
+\begin{solution}
+\begin{lstlisting}[language=Python]
+def choose_action(w, obs):
+    """
+    A simple linear policy for CartPole: 
+      action = 1 if w dot obs > 0 else 0.
+    w, obs: shape (4,)
+    """
+    ### YOUR CODE HERE ###
+    pass
+
+
+def rollout_episode(env, w):
+    """
+    Run one full episode in 'env' using param 'w'.
+    Return total (undiscounted) reward.
+    """
+    ### YOUR CODE HERE ###
+    pass
+
+
+def train_cem_policy(env, dim=4, cem_iterations=10, sample_size=50, elite_frac=0.2):
+    """
+    TODOs: Zero-Order Policy Search with CEM.
+      1) Maintain param distribution (mean, std) in R^dim
+      2) For iteration in [1..cem_iterations]:
+         - sample 'sample_size' param vectors
+         - evaluate each, get total reward
+         - pick top 'elite_frac', update distribution
+      3) Return best param or final mean
+    """
+
+    # Example init (feel free to change it)
+    mean = np.zeros(dim)  
+    std = np.ones(dim)*2.0 
+    best_w = mean.copy()
+    best_score = -1e9
+
+    ### YOUR CODE HERE ###
+    
+    pass 
+
+
+def eval_policy(env, w, episodes=5):
+    """
+    TODOs: Evaluate policy param 'w' over multiple episodes 
+    and return average total reward.
+    """
+    ### YOUR CODE HERE ###
+    pass
+
+
+\end{lstlisting}
+\end{solution}
+
+\section*{Question 3. (20 points). Flap Like How Flappy Sr. Taught You! }
+This is an introduction to implement Behavioral Cloning.
+The starter code and complete instructions can be found on linked \href{https://colab.research.google.com/drive/1tzJ1xJyenFmJ75Sih2WkO7M4mLV-9Ofp?usp=sharing}{\textbf{Google Colab here}}.
+        \subsection*{(a) Policy Evaluation} 
+            Paste the \textbf{entire cell} implementing policy evaluation below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+
+            \noindent
+            Paste the \textbf{entire cell} for evaluating a policy that chooses actions uniformly at random below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+        
+        \subsection*{(b) Defining a Policy} 
+            Paste the \textbf{entire cell} defining a policy class over discrete actions below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+
+        \subsection*{(c) Setting Up Behavioral Cloning} 
+            Paste the \textbf{entire cell} defining a behavioral cloning training loop below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+
+        \subsection*{(d) Behavioral Cloning and Evaluation} 
+            Paste the \textbf{entire cell} applying behavioral cloning to \verb+flappy_sr_notes.mat+ below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+
+    \section*{Question 4 (35 points): Floppy the Sloppy Ruins the Day }
+    This is an introduction to Filtered Behavioral Cloning.
+    
+        \subsection*{(a) What is Left???} 
+            Paste the \textbf{entire cell} applying behavioral cloning to \verb+vandalized_notes.mat+ below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+
+        
+        \subsection*{(b) Array of Hope???} 
+            Paste the \textbf{entire cell} defining a reweighed behavioral cloning loss below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+
+            \noindent
+            Paste the \textbf{entire cell} defining a training loop using the reweighed behavioral cloning loss below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+
+        \subsection*{(c) Filtering Strategy I: Trajectory-Level Reweighting???} 
+            Paste the \textbf{entire cell} implementing the trajectory-level reweighting scheme below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+
+            \noindent
+            Paste the \textbf{entire cell} applying the reweighting scheme above to Filtered BC.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+
+        
+        \subsection*{(d) Filtering Strategy II: Truncated Future Return???} 
+            Paste the \textbf{entire cell} implementing the truncated future return reweighting scheme below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+
+            \noindent
+            Paste the \textbf{entire cell} applying the reweighting scheme above to Filtered BC.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+####################
+#YOUR CODE HERE
+####################
+                \end{lstlisting}
+            \end{solution}
+
+
+    \section*{Question 5 (25 points): Short-Answer Questions}
+
+        For this problem, we will ask you a few questions regarding the experiments you ran to hopefully further develop your intuition for BC/Filtered BC.
+        \textbf{Limit your answer to each part to 2--3 sentences. You only need to choose 5 questions to answers.}
+        Note that these questions are found throughout Problem 2 in the provided \verb+.ipynb+ file.
+
+        \vspace{1ex}
+        
+        \noindent
+        1. What does the result of the experiment in Problem 2(a) tell you about running behavioral cloning on noisy/low-quality datasets? Intuitively, why does this happen? \newline 
+        (Hint: Think about what the BC loss is optimizing.)
+        \begin{solution}
+            (Your answer here.)
+        \end{solution}
+
+        \noindent
+        2. Why does the trajectory-level reweighting scheme in Problem 2(c) work? How does it affect what the BC loss is doing?
+        \begin{solution}
+            (Your answer here.)
+        \end{solution}
+
+        \noindent
+        3. What is the effect of the temperature on the weighing scheme in Problem 2(c)? \newline
+        (Hint: As a starting point, think about what happens to the softmax function as $\alpha \to 0$. To make it even easier to think about, consider applying the softmax to two fixed values $a, b$ with $a > b$ as you take this limit.)
+        \begin{solution}
+            (Your answer here.)
+        \end{solution}
+
+        \noindent
+        4. One could consider a version of the reweighting scheme from Problem 2(c), where we remove the softmax and simply define the weight for $\tau_i$ as $R(\tau_i)$. While this may work in certain circumstances, can you think of some potential pitfalls of such a weighing scheme? \newline
+        (Hint: Think about the values the reward function could take in all kinds of environments).
+        \begin{solution}
+            (Your answer here.)
+        \end{solution}
+
+        \noindent
+        5. Let us explore the effect of the hyperparameter $T$ on the weighing scheme in Problem 2(d). Give a succinct description of the weights when $T = 1$. Do you expect this to work well in general? Why or why not?
+        \begin{solution}
+            (Your answer here.)
+        \end{solution}
+        
+        \noindent
+        6. Can you think of a reason why one can set $T$ in Problem 2(d) relatively small in Flappy Bird and still obtain decent performance?
+        \begin{solution}
+            (Your answer here.)
+        \end{solution}
+        7. What are the risks of making an error when reconstructing Flappy Sr.’s flight path? How does this compare to real-world applications like self-driving cars?
+        \begin{solution}
+            (Your answer here.)
+        \end{solution}
+        8. How can filtering strategies prevent a self-driving car from learning dangerous driving habits from human demonstrations?
+        \begin{solution}
+            (Your answer here.)
+        \end{solution}
+        9. What ethical considerations arise in behavioral cloning when using data from competitors?
+        \begin{solution}
+            (Your answer here.)
+        \end{solution}
+        % 10. How does the OpenAI vs. DeepSeek case relate to behavioral cloning?
+        % \begin{solution}
+        %     (Your answer here.)
+        % \end{solution}
+        
+
+ \end{document}
