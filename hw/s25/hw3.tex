@@ -1,0 +1,262 @@
+\documentclass[12pt]{article}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{enumerate}
+\usepackage{fancyvrb}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{tikzsymbols}
+\usepackage{todonotes}
+\usepackage{bbm}
+\usepackage{color}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{soul} % for HL
+\usepackage{color} % for HL
+\usepackage{minted}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% \renewcommand{\theenumi}{\roman{enumi}}
+\newcommand{\rmn}[1]{{\textcolor{blue}{\bf [{\sc rmn:} #1]}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\usetikzlibrary{positioning,calc}
+%%%%%%%%%
+\usepackage[most]{tcolorbox}
+\newtcolorbox[]{solution}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Solution,
+    #1
+}
+
+\newtcolorbox[]{fillme}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Fill me in,
+    #1
+}
+
+\newcommand*{\E}{\mathbb{E}}
+\newcommand*{\prob}{\mathbb{P}}
+\newcommand*{\F}{\mathcal{F}}
+\newcommand*{\bo}{\mathbb{B}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{observation}{Observation}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+%%%%%%%%%%
+
+\date{Due February 24, 2025}
+\author{\begin{fillme}[width=0.3\textwidth]
+ Your name here.
+\end{fillme}} % Fill in your name!
+
+\title{ECE433/COS435 Introduction to RL\\
+  Assignment 3: Value Iteration and Policy Gradient\\
+  Spring 2025\\
+}
+
+\begin{document}
+  \maketitle
+  \section*{Collaborators}
+\begin{fillme}
+ Please fill in the names and NetIDs of your collaborators in this section.
+\end{fillme}
+
+\section*{Instructions}
+Writeups should be typesetted in Latex and submitted as PDF. You can work with whatever tool you like for the code, but \textbf{please submit the asked-for snippet and answer in the solutions box as part of your writeup. We will only be grading your writeup.}
+
+\paragraph{Grading.} 
+Questions 1-2 will collectively be worth total 50 points, and the coding assignment will also be worth 50 points, making the total score 100 points.
+
+\section*{Question 0 (0 points). Feedback}
+How many hours did you spend on this homework? Please fill in the solution after you've done all the questions.
+\begin{solution}
+    Your solution here...
+\end{solution}
+
+\section*{Question 1 (20 points). Finite-state Value Function}
+An agent is navigating a very simple environment structured as a straight path with three states labeled $s_1$, $s_2$, and $s_3$, where state $s_3$ is a terminal state. At each step, the agent can choose to move to the adjacent states or stay in the current state. Assume the discount factor $\gamma = 0.5$.
+The actions available in each state are: 
+\begin{itemize}
+    \item In state $s_1$: the agent can either “move” to state $s_2$ or “stay” in state $s_1$. 
+    \item In state $s_2$: the agent can “move” to state $s_3$, ”stay” in state $s_2$, or “move back” to state $s_1$.
+\end{itemize}
+The rewards are as follows:\begin{itemize}
+    \item Moving from state $s_1$ to state $s_2$ gives a reward of -1.
+    \item Moving from state $s_2$ to state $s_3$ gives a reward of 0. 
+    \item Moving back from state $s_2$ to state $s_1$ gives a reward of -2.
+    \item Staying in states $s_1$ or state $s_2$ gives a reward of -1.
+\end{itemize}
+\subsection*{Question 1.a (10 points)}
+Calculate the value function for each state when the agent always decides to ”move” to the next state when possible (i.e., from $s_1$ to $s_2$, and from $s_2$ to $s_3$). (Note: The reward and value function at the terminal state $s_3$ is zero.)
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\subsection*{Question 1.b (10 points)}
+Calculate the value function at each state when the agent always chooses to move to state $s_2$ when in state $s_1$, and always chooses to move back to state $s_1$ when in state $s_2$. (Note: The reward and value function at the terminal state $s_3$ is zero.)
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\section*{Question 2 (30 points). Properties of value functions}
+In this question, we consider an infinite horizon MDP $\mathcal{M} = (\mathcal{S}, \mathcal{A}, r, p, \gamma)$. We aim to derive some interesting theoretical properties for its value function.
+{Recall that a value function $V$ is the optimal value function if and only if it satisfies the Bellman Optimal Equation:
+\[
+    V(s) = \max_a \left[r(s,a) + \gamma \mathbb{E}_{s'\sim p(\cdot|s,a)} V(s')  \right],\quad \text{for all } (s,a).
+\]}
+\subsection*{Question 2.a (10 points)} 
+Show that a policy $\pi$ is optimal if and only if its corresponding value functions  $V^\pi: \mathcal{S} \rightarrow \mathbb{R}$ and $Q^\pi: \mathcal{S} \times \mathcal{A} \rightarrow \mathbb{R}$ satisfies $V^{\pi}(s)\geq Q^{\pi}(s,a)$  for all $(s,a) \in \mathcal{S} \times \mathcal{A}$.
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\subsection*{Question 2.b (10 points)}
+Is the optimal policy of an MDP unique? Please answer by proof or a counter-example.
+\begin{solution}
+Your solution here...
+\end{solution}
+\subsection*{Question 2.c (5 points)}
+Suppose that $\mathcal{M}$ has no terminating state. The agent will work forever. Now someone decides to add a small reward bonus $c$ to all transitions in the MDP, which results in a new reward $r'(s,a) = r(s,a)+c$ for all $(s,a)\in \mathcal{S}\times\mathcal{A}$. Note that $r$ is the original reward function. Could this change the optimal policy of $\mathcal{M}$?
+\begin{solution}
+    Your solution here...
+\end{solution}
+\subsection*{Question 2.d (5 points)}
+If $\mathcal{M}$ is allowed to have terminating states, does the answer in Question 2.c still hold? If not,  provide an example MDP where your answers to Question 2.c and this one differs.
+\begin{solution}
+    Your solution here...
+\end{solution}
+
+\section*{Question 3 (50 points). Coding Problems}
+
+\subsection*{3.1 Value Iterations (20 points)}
+\subsubsection*{a. Bellman Update (15 points)}
+Paste the code block implementing \texttt{Bellman Update} below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+		############################
+		# YOUR IMPLEMENTATION HERE #
+	
+		############################
+                \end{lstlisting}
+            \end{solution}
+ 
+\subsubsection*{b. Value Iteration (5 points)}
+Paste the code block implementing \texttt{Value Iteration} below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+    ############################
+    # YOUR IMPLEMENTATION HERE #
+    
+    ############################
+                \end{lstlisting}
+            \end{solution}
+
+\subsubsection*{c. Results and Discussion (0 points)}
+Take a look at the document of the RL environment. What is the theoretical upper bound of the un-discounted cumulative reward for this environment? How close are the rewards of your learned policy to the upper bound?
+\begin{solution}
+    Your solution here...
+\end{solution}
+
+\subsection*{3.2 REINFORCE}
+\subsubsection*{a. Discounted Reward (15 points)}
+Please paste the code block implementing \texttt{discounted reward} below. 
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+    ############################
+    # YOUR IMPLEMENTATION HERE #
+    
+    ############################
+                \end{lstlisting}
+            \end{solution}
+
+
+\subsubsection*{b. REINFORCE (15 points)}
+Please paste the code block implementing \texttt{REINFORCE} below. 
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+    ############################
+    # YOUR IMPLEMENTATION HERE #
+    
+    ############################
+                \end{lstlisting}
+            \end{solution}
+
+\subsubsection*{c. Results and Discussion (0 points)}
+Take a look at the document of the RL environment. What is the theoretical upper bound of the un-discounted cumulative reward for this environment? How close are the rewards of your learned policy to the upper bound?
+\begin{solution}
+    Your solution here...
+\end{solution}
+
+
+\section*{Question 4 (0 points). Bellman residual [Optional]}
+This problem \textbf{will not be graded}, but we encourage those who are interested in the theoretical aspect of reinforcement learning to try it out. We will not include questions like this in formal exams. In the lecture, we introduced the (optimal) Bellman operator for an infinite horizon MDP with discount factor $\gamma$ and transition $p$:
+$$(\bo V)(s) = \max_{a\in\mathcal{A}} \bigg\{r(s,a) + \gamma \sum_{s'\in\mathcal{S}} p(s'|s,a) V(s')\bigg\},$$
+and the Bellman operator with respect to a certain policy $\pi$:
+$$(\bo^\pi V)(s) = \sum_{a\in\mathcal{A}} r(s,a)\pi(a|s)+ \gamma \sum_{s'\in\mathcal{S},a\in \mathcal{A}} p(s'|s,a)\pi(a|s) V(s').$$
+We denote the optimal policy by $\pi^*$ and the optimal value function by $V^*$. As we know from the lecture, learning $V^*$ is equivalent to solving the following Bellman equation:
+$$V(s) -\bo V(s) = 0, \forall s \in \mathcal{S}.$$
+For an arbitrary function $V: \mathcal{S} \rightarrow \mathbb{R}$, define the Bellman residual to be $(\bo V - V ) $, and its magnitude by $\|\bo V - V \|_\infty$. Recall that for a vector $x = (x_i)_{i\in[d]}$, $\|\cdot\|_\infty$ is defined by $\max_{i\in[d]} |x_i|$. As we will see through the course, this \textbf{Bellman residual is an important component of several important RL algorithms such as the Deep Q-network. }
+%
+%
+\subsection*{Question 4.a}Prove the following statements for an arbitrary $V: \mathcal{S} \rightarrow \mathbb{R}$ (not necessarily a value function for any policy):
+\begin{align*}
+    \|V - V^\pi \|_\infty &\leq \frac{\|V - \bo^\pi V\|_\infty}{1-\gamma}, \text{ for any policy } \pi\\
+    \|V - V^* \|_\infty &\leq \frac{\|V - \bo V\|_\infty}{1-\gamma}.
+\end{align*}
+(Hint: use Bellman equation to expand $V^\pi$, then apply triangle inequality.)
+\begin{solution}
+    Your solution here...
+\end{solution}
+%
+%
+\subsection*{Question 4.b} Now let's assume that $\pi$ is the greedy policy extracted from $V$, and assume $\|V - \bo V\|_\infty \leq \epsilon$. Prove the following inequality by utilizing the results in Question 3.a: 
+$$V^* - V^{\pi} \leq  \frac{2\epsilon}{1-\gamma}.$$
+This shows that as long as the Bellman residual of $V$ is small, then the policy learned from $V$ will not be too bad. 
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\end{document}
+
+
+
