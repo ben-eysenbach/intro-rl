@@ -1,0 +1,242 @@
+\documentclass[12pt]{article}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{enumerate}
+\usepackage{fancyvrb}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{tikzsymbols}
+\usepackage{todonotes}
+\usepackage{bbm}
+\usepackage{color}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{soul} % for HL
+\usepackage{color} % for HL
+\usepackage{minted}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{multicol}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% \renewcommand{\theenumi}{\roman{enumi}}
+\newcommand{\rmn}[1]{{\textcolor{blue}{\bf [{\sc rmn:} #1]}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\usetikzlibrary{positioning,calc}
+%%%%%%%%%
+\usepackage[most]{tcolorbox}
+\newtcolorbox[]{solution}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Solution,
+    #1
+}
+
+\newtcolorbox[]{fillme}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Fill me in,
+    #1
+}
+
+\newcommand*{\E}{\mathbb{E}}
+\newcommand*{\prob}{\mathbb{P}}
+\newcommand*{\F}{\mathcal{F}}
+\newcommand*{\bo}{\mathbb{B}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{observation}{Observation}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+%%%%%%%%%%
+
+\date{Due March 4, 2024}
+\author{\begin{fillme}[width=0.3\textwidth]
+ Your name here.
+\end{fillme}} % Fill in your name!
+
+\title{ECE433/COS435 Introduction to RL\\
+  Assignment 4: Q-learning and SARSA
+\\
+  Spring 2024\\
+}
+
+\begin{document}
+  \maketitle
+  \section*{Collaborators}
+\begin{fillme}
+ Please fill in the names and NetIDs of your collaborators in this section.
+\end{fillme}
+
+\section*{Instructions}
+
+Writeups should be typesetted in Latex and submitted as PDFs. You can work with whatever tool you like for the code, but \textbf{please submit the asked-for snippet and answer in the solutions box as part of your writeup. We will only be grading your write-up.}
+
+\section*{Question 1. Q-Learning (40 points)}
+\section*{Tabular setting}
+If the state and action spaces are sufficiently small, we can maintain a table containing the value of $Q(s,a)$ -- an estimate of $Q^*(s,a)$\footnote{Here, $Q^*(s,a)$ refers to optimal $Q$ value function.} -- for every $(s,a)$ pair. In this \textit{tabular setting}, given an experience sample $(s,a,r,s')$, the update rule is
+\begin{equation} \label{q-learning-update}
+Q(s,a) \leftarrow Q(s,a) + \alpha \left( r + \gamma \max_{a' \in \mathcal{A}} Q(s',a') - Q(s,a) \right)
+\end{equation}
+where $\alpha > 0$ is the learning rate and $\gamma \in [0, 1]$ is the discount factor.
+
+\subsection*{Question 1.a: Regular Q-Learning (10 points)} 
+Why is it difficult to extend this learning rule to the game of Tetris or similar Atari games?
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\section*{Approximation setting}
+Here, we instead represent our Q-values as a function $\hat{q}(s,a;\mathbf{w})$, where $\mathbf{w}$ are parameters of the function (typically a neural network's weights and bias parameters). In this \textit{approximation setting}, the update rule becomes
+\begin{equation}
+\mathbf{w} \leftarrow \mathbf{w} + \alpha \left( r + \gamma \max_{a' \in \mathcal{A}} \hat{q}(s',a';\mathbf{w}) - \hat{q}(s,a;\mathbf{w}) \right) \nabla_{\mathbf{w}}\hat{q}(s,a;\mathbf{w}).
+\end{equation}
+In other words, given current parameters at iteration $i$, $\mathbf{w}_i$, we aim to minimize the loss at $\mathbf{w}_{i+1}$ which is:
+\begin{equation}
+L(\mathbf{w}_{i+1}) = \mathbb{E}_{s,a,r,s' \sim \mathcal{D}} \left[ \left( r + \gamma \max_{a' \in \mathcal{A}} \hat{q}(s',a';\mathbf{w}_{i}) - \hat{q}(s,a;\mathbf{w}_{i+1}) \right)^2 \right]
+\end{equation}
+
+\subsection*{Question 1.b: Continuous actions (10 points)}
+Consider an environment such as \href{https://www.gymlibrary.dev/environments/classic_control/mountain_car_continuous/}{Mountain Car Continuous} where the action space is $[-1,1] \in \mathbb{R}$. How might our representation of the Q-function described in (1.a) change to support our use case?
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\subsection*{Question 1.c: Action spaces (10 points)}
+We can represent a Q-function $Q(s, a)$ as either a function $Q(s; w): S \rightarrow \mathbb{R}^{|A|}$ outputting the vector of Q-values $[Q(s, a_1), …, Q(s, a_{|A|})]$ all at once, or a function $Q(s, a; w): S \times A \rightarrow R$ outputting a single Q-value $Q(s, a)$. What is a benefit of implementing the former over the latter? What is one drawback?
+\begin{solution}
+Your solution here...
+\end{solution}
+
+
+\subsection*{Question 1.d: Policy iteration (10 points)}
+Policy iteration is a reinforcement learning algorithm that provably improves a policy. In policy iteration, there are two steps: one called ``policy evaluation" and another is ``policy improvement".  Step ``policy evaluation" estimates the ``value" of a state under the current policy $\pi$ being learned:
+$$ V^\pi(s) =  \sum_{s' \in S} P_{\pi(s)} (s' \mid s)\ [r(s,a,s') +  \gamma\ V^\pi(s') ] $$
+Step ``policy improvement" improves the current policy $\pi$ based on the evaluation. Other than the fact Q-learning learns a Q-function and policy iteration learns a V-function, how do these two methods differ from each other and explain in details? (Consider the policy usage and the environment transition function)
+
+\begin{solution}
+Your solution here...
+\end{solution}
+
+\section*{Question 2. Learning Value Functions (55 points)}
+We will implement three RL algorithms:
+\begin{itemize}
+    \item 1. Q-Learning (Off-policy TD control)
+    \item 2. SARSA (On-policy TD control)
+    \item 3. Monte Carlo (Episodic control)
+\end{itemize}
+We will use a simple neural network to approximate $Q(s, a)$ in a discrete-action environment (e.g., ``CartPole-v1'').
+
+\subsection*{Question 2.a (10 points)}
+Paste the code block implementing \texttt{QNetwork} below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+    ############################
+    # YOUR IMPLEMENTATION HERE #
+    
+    ############################
+                \end{lstlisting}
+            \end{solution}
+
+\subsection*{Question 2.b (5 points)}
+Paste the code block implementing \texttt{epsilon-greedy policy} below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+    ############################
+    # YOUR IMPLEMENTATION HERE #
+    
+    ############################
+                \end{lstlisting}
+            \end{solution}
+
+\subsection*{Question 2.c.1 (15 points)}
+Paste the code block implementing \texttt{q\_learning\_update} below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+    ############################
+    # YOUR IMPLEMENTATION HERE #
+    
+    ############################
+                \end{lstlisting}
+            \end{solution}
+
+
+\subsection*{Question 2.c.2 (15 points)}
+Paste the code block implementing \texttt{sarsa\_update} below.
+            \begin{solution}
+                \begin{lstlisting}[language=Python]
+    ############################
+    # YOUR IMPLEMENTATION HERE #
+    
+    ############################
+                \end{lstlisting}
+            \end{solution}
+
+
+\subsection*{Question 2.c.3 (5 points)}
+Paste the learning curves from the three methods (Q-learning, SARSA, Monte Carlo regression) below, and analyze the performances of these methods.
+\begin{solution}
+Your answer here...
+\end{solution}
+
+\subsection*{Question 2.c.d (10 points)}
+Examine the training loops and update functions for Q-learning and SARSA. Assuming that you're given a dataset of transitions $(s_t, a_t, r_t, s_{t+1})$ collected from a policy $\beta(a \vert s)$, will these two methods converge to the same policy? Why or why not?
+\begin{solution}
+Your answer here...
+\end{solution}
+
+\section*{Question 3 (5 points)}
+\subsection*{Course Feedback}
+What would you change so far about the course?
+
+\begin{solution}
+Your answer here...
+\end{solution}
+
+\subsection*{Midterm Questions}
+For this year's midterm, the course staff is making questions, but also allowing students to create (a public bank) of potential questions we may put on the midterm. This will also form a nice study guide for the midterm itself.
+\\\\
+\textbf{Propose 3 simple questions} that you would want to see on the midterm. There will be a Google Form to submit your questions, which we will publicly release as a study guide. Use the Google Form linked \textbf{ \href{https://docs.google.com/forms/d/e/1FAIpQLSf_R6BmyPmL2xqTLhjCuGk3VhnWLVolgRAcbJcYZ4JZIrur6w/viewform?usp=header}{here.}}
+\\\\
+The spreadsheet with all other student's questions can be found \href{https://docs.google.com/spreadsheets/d/1NNUCzxik1hsLzYCcXDZvyr-dMafs1CGRMQtLl6lOYWQ/edit?usp=sharing}{\textbf{here}}.
+
+\end{document}
+
+
