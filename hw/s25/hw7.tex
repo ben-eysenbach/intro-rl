@@ -1,0 +1,269 @@
+\documentclass[12pt]{article}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{enumerate}
+\usepackage{fancyvrb}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{tikzsymbols}
+\usepackage{todonotes}
+\usepackage{bbm}
+\usepackage{color}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{soul} % for HL
+\usepackage{color} % for HL
+\usepackage{minted}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{multicol}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% \renewcommand{\theenumi}{\roman{enumi}}
+\newcommand{\rmn}[1]{{\textcolor{blue}{\bf [{\sc rmn:} #1]}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\usetikzlibrary{positioning,calc}
+%%%%%%%%%
+\usepackage[most]{tcolorbox}
+\newtcolorbox[]{solution}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Solution,
+    #1
+}
+
+\newtcolorbox[]{fillme}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Fill me in,
+    #1
+}
+
+\newcommand*{\E}{\mathbb{E}}
+\newcommand*{\prob}{\mathbb{P}}
+\newcommand*{\F}{\mathcal{F}}
+\newcommand*{\bo}{\mathbb{B}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{observation}{Observation}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+%%%%%%%%%%
+
+\date{Due April 11, 2025}
+\author{\begin{fillme}[width=0.3\textwidth]
+ Your name here.
+\end{fillme}} % Fill in your name!
+
+\title{ECE433/COS435 Introduction to RL\\
+  Assignment 7: Actor-critic Algorithms for continuous action space: SAC
+\\
+  Spring 2025\\
+}
+
+\begin{document}
+  \maketitle
+  \section*{Collaborators}
+\begin{fillme}
+ Please fill in the names and NetIDs of your collaborators in this section.
+\end{fillme}
+
+\section*{Instructions}
+
+Writeups should be typesetted in Latex and submitted as PDFs. You can work with whatever tool you like for the code, but \textbf{please submit the asked-for snippet and answer in the solutions box as part of your writeup. We will only be grading your write-up.}
+
+
+In this assignment, we will introduce two modern RL algorithms that aim to tackle MDPs with continuous action space: Deep Deterministic Policy Gradient (DDPG) and Twin Delayed DDPG (TD3).
+
+The workflow for the rest of this assignment is as follows: we will implement the SAC algorithm, and then evaluate their performance on the Gym environment Pendulum-v1. We provide a sample implementation to TD3, which can be helpful as a reference for your implementation of SAC. 
+
+\section*{Question 1. Soft Actor-Crtic (SAC)}
+
+\subsection*{Question 1.a} 
+First, you want to build your Actor\_SAC and Critic\_SAC networks.
+Paste your class below:
+\begin{solution}
+\begin{lstlisting}[language=Python]
+class Actor_SAC(nn.Module):
+    def __init__(self, state_dim, action_dim, max_action):
+        super(Actor_SAC, self).__init__()
+        # [HINT] Construct a neural network as the actor. Return its value using forward You need to write down three linear layers.
+        # 1. l1: state_dim -> 256
+        # 2. l2: 256 -> 256
+        # 3. l3: 256 -> mean and log std of the action
+        ############################
+        # YOUR IMPLEMENTATION HERE #
+        pass
+        ############################
+        self.max_action = max_action
+
+    def forward(self, state):
+        # [HINT] Use the three linear layers to compute the mean and log std of the action
+        # Apply ReLU activation after layer l1 and l2
+        ############################
+        # YOUR IMPLEMENTATION HERE #
+        pass
+        ############################
+        log_std = torch.clamp(log_std, min=LOG_STD_MIN, max=LOG_STD_MAX)
+        return mean, log_std
+
+    def sample(self, state):
+        # [HINT] Use the forward method to compute the action, its log probability
+        # 1. Compute the mean and log std of the action
+        # 2. Compute the standard deviation of the action
+        # 3. Get the normal distribution of the action
+        # 4. Sample the action from the normal distribution
+        # 5. Apply tanh to the action and multiply by max_action to ensure the action is in the range of the action space
+        # 6. Compute the log probability of the action
+        
+        ############################
+        # YOUR IMPLEMENTATION HERE #
+        pass
+        ############################
+        return action, log_prob
+\end{lstlisting}
+\begin{lstlisting}[language=Python]
+class Critic_SAC(nn.Module):
+    def __init__(self, state_dim, action_dim):
+        super(Critic_SAC, self).__init__()
+        # Q1 architecture
+        # [HINT] Construct a neural network as the first critic. Return its value using forward You need to write down three linear layers.
+        # 1. l1: state_dim+action_dim -> 256
+        # 2. l2: 256 -> 256
+        # 3. l3: 256 -> 1
+        ############################
+        # YOUR IMPLEMENTATION HERE #
+        pass
+        ############################
+
+        # Q2 architecture
+        # [HINT] Construct a neural network as the second critic. Return its value using forward. You need to write down three linear layers.
+        # 1. l4: state_dim+action_dim -> 256
+        # 2. l5: 256 -> 256
+        # 3. l6: 256 -> 1
+        ############################
+        # YOUR IMPLEMENTATION HERE #
+        pass
+        ############################
+
+
+    def forward(self, state, action):
+        sa = torch.cat([state, action], 1)
+        # [HINT] We use layers l1, l2, l3 to obtain q1
+        # 1. Apply ReLU activation after layer l1
+        # 2. Apply ReLU activation after layer l2
+        # 3. Return output as q1 from layer l3
+
+        # [HINT] We use layers l4, l5, l6 to obtain q2
+        # 1. Apply ReLU activation after layer l4
+        # 2. Apply ReLU activation after layer l5
+        # 3. Return output as q2 from layer l6
+
+        ############################
+        # YOUR IMPLEMENTATION HERE #
+        pass
+        ############################
+        return q1, q2
+
+
+    def Q1(self, state, action):
+        sa = torch.cat([state, action], 1)
+        # [HINT] only returns q1 for actor update using layers l1, l2, l3
+        # 1. Apply ReLU activation after layer l1
+        # 2. Apply ReLU activation after layer l2
+        # 3. Return output as q1 from layer l3
+        ############################
+        # YOUR IMPLEMENTATION HERE #
+        pass
+        ############################
+        return q1
+\end{lstlisting}
+\end{solution}
+
+\subsection*{Question 1.b} 
+Now we are ready to construct a SAC trainer! In the following function you will need to: (1) Calculate the TD value using target\_Q network and update the critic; (2) Compute the actor loss using the current state and sampled action and update the actor; (3) Update the target networks.
+\begin{solution}
+\begin{lstlisting}[language=Python]
+def train(self, replay_buffer, batch_size=256):
+    state, action, next_state, reward, not_done = replay_buffer.sample(batch_size)
+
+    # [HINT] compute the target Q value
+    # 1. Sample the next action and its log probability from the actor with next_state
+    # 2. Compute the next Q values (Q1 and Q2) using the critic_target with next_state and next_action
+    # 3. Min over the Q values: target_Q = min(Q1, Q2) - log_prob(a'|s') * alpha
+    # 4. Compute the target Q value: target_Q = reward + not_done * discount * target_Q
+
+    ############################
+    # YOUR IMPLEMENTATION HERE #
+    pass
+    ############################
+
+    self.critic_optimizer.zero_grad()
+    critic_loss.backward()
+    self.critic_optimizer.step()
+
+    # [HINT] compute the actor loss
+    # 1. Sample the action and its log probability from the actor with state
+    # 2. Compute the Q values (Q1 and Q2) using the critic with state and action
+    # 3. Min over the Q values: Q = min(Q1, Q2)
+    # 4. Compute the actor loss: actor_loss = alpha * log_prob(a|s) - Q
+
+    ############################
+    # YOUR IMPLEMENTATION HERE #
+    pass
+    ############################
+
+    self.actor_optimizer.zero_grad()
+    actor_loss.backward()
+    self.actor_optimizer.step()
+
+    for param, target_param in zip(self.critic.parameters(), self.critic_target.parameters()):
+        target_param.data.copy_(self.tau * param.data + (1 - self.tau) * target_param.data)
+\end{lstlisting}
+\end{solution}
+
+\subsection*{Question 1.c} 
+Time to see how it works. We would expect a reward that converges to negative values close to 0. The estimated wall time for running the whole process is around $10-20$ minutes, and you should be able to see a large positive reward at around 50 episodes. 
+\begin{solution}
+Training curve:
+\end{solution}
+\end{document}
+
+
