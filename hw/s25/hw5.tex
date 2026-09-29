@@ -1,0 +1,172 @@
+\documentclass[12pt]{article}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+\usepackage{enumerate}
+\usepackage{fancyvrb}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{tikzsymbols}
+\usepackage{todonotes}
+\usepackage{bbm}
+\usepackage{color}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{soul} % for HL
+\usepackage{color} % for HL
+\usepackage{minted}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{multicol}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+% \renewcommand{\theenumi}{\roman{enumi}}
+\newcommand{\rmn}[1]{{\textcolor{blue}{\bf [{\sc rmn:} #1]}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\usetikzlibrary{positioning,calc}
+%%%%%%%%%
+\usepackage[most]{tcolorbox}
+\newtcolorbox[]{solution}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Solution,
+    #1
+}
+
+\newtcolorbox[]{fillme}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Fill me in,
+    #1
+}
+
+\newcommand*{\E}{\mathbb{E}}
+\newcommand*{\prob}{\mathbb{P}}
+\newcommand*{\F}{\mathcal{F}}
+\newcommand*{\bo}{\mathbb{B}}
+\newtheorem{theorem}{Theorem}
+\newtheorem{observation}{Observation}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+%%%%%%%%%%
+
+\date{Due March 28, 2024}
+\author{\begin{fillme}[width=0.3\textwidth]
+ Your name here.
+\end{fillme}} % Fill in your name!
+
+\title{ECE433/COS435 Introduction to RL\\
+  Assignment 5: Proximal Policy Optimization (PPO)
+\\
+  Spring 2025\\
+}
+
+\begin{document}
+  \maketitle
+  \section*{Collaborators}
+\begin{fillme}
+ Please fill in the names and NetIDs of your collaborators in this section.
+\end{fillme}
+
+\section*{Instructions}
+
+Writeups should be typesetted in Latex and submitted as PDFs. You can work with whatever tool you like for the code, but \textbf{please submit the asked-for snippet and answer in the solutions box as part of your writeup. We will only be grading your write-up.}
+
+\section*{Question 1.}
+
+In this assignment, we will implement Proximal Policy Optimization (PPO) for the CartPole-v1 environment from OpenAI Gym. Along the way, we will incorporate several important policy gradient concepts:
+
+\begin{itemize}
+    \item REINFORCE (Monte Carlo Policy Gradient)
+    \item Importance Weighting (IW) (For Off-Policy Learning)
+    \item Generalized Advantage Estimation (GAE) (To Balance Bias and Variance)
+\end{itemize}
+
+
+
+
+\subsection*{Question 1.a} 
+First, you need to implement the policy network, which decides the actions to take, and the value network, which estimates the returns.
+Paste your class below:
+\begin{solution}
+\begin{lstlisting}[language=Python]
+class PolicyNetwork(nn.Module):
+    pass
+\end{lstlisting}
+\begin{lstlisting}[language=Python]
+class ValueNetwork(nn.Module):
+    pass
+\end{lstlisting}
+\end{solution}
+
+\subsection*{Question 1.b} 
+Below you need to implement GAE. The function should return the advantage estimates for each state-action pair.
+Paste below:
+\begin{solution}
+\begin{lstlisting}[language=Python]
+def compute_advantages(next_value, rewards, masks, values, gamma=0.99, lambda_gae=0.95):
+    values = values + [next_value]  # Append bootstrap value for last state
+    advantages = 0
+    returns = []
+
+    return returns
+\end{lstlisting}
+\end{solution}
+
+\subsection*{Question 1.c} 
+Now let's move to the training parts. You need to implement the function below, which applies the core PPO algorithm and uses the experiences collected from the environment to perform multiple epochs of updates on the policy and value networks.
+Paste below:
+\begin{solution}
+\begin{lstlisting}[language=Python]
+def ppo_update(policy_net, value_net, optimizer, ppo_epochs, mini_batch_size, states, actions, log_probs, returns, advantages, clip_param=0.2):
+\end{lstlisting}
+\end{solution}
+
+\subsection*{Question 1.d} 
+Finally, you should be able to run the main PPO training.
+You can freely adjust all hyperparameters for better performance. The provided hyperparameters, if implemented correctly, should be able to make rewards close to/higher than 400.
+
+Note: Please try several times if you think your code is correct, the learning curves can have some variances over different runs. Present the best run you can get.
+\begin{solution}
+
+\end{solution}
+\end{document}
+
+
